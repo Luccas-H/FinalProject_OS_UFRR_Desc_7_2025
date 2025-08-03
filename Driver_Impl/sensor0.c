@@ -5,6 +5,7 @@
 #include <linux/uaccess.h>
 #include <linux/random.h>
 #include <linux/device.h>
+#include <linux/version.h> 
 
 #define DEVICE_NAME "sensor0"
 #define CLASS_NAME  "vsensor"
@@ -17,7 +18,7 @@ MODULE_VERSION("1.0.0");
 static int    majorNumber;
 static struct class*  sensorClass  = NULL;
 static struct device* sensorDevice = NULL;
-static char   message[128] = {0};
+static char   message[128] = {0};  // Message buffer
 static short  message_size;
 static int    numberOpens = 0;
 
@@ -45,23 +46,30 @@ static int dev_open(struct inode *inodep, struct file *filep){
 
 // Função chamada quando o dispositivo é lido
 static ssize_t dev_read(struct file *filep, char *buffer, size_t len, loff_t *offset){
-    u32 random_number;
     int error_count = 0;
-    char sensor_data[32];
 
-    get_random_bytes(&random_number, sizeof(random_number));
-    snprintf(sensor_data, sizeof(sensor_data), "Sensor: %u\n", random_number);
+    // Return the last message written by the user
+    message_size = strlen(message);  // Use the size of the 'message' array
 
-    message_size = strlen(sensor_data);
+    if (*offset >= message_size) {
+        return 0;  // EOF (end of file)
+    }
 
-    error_count = copy_to_user(buffer, sensor_data, message_size);
+    // Only copy part of the message if requested length exceeds the remaining data
+    if (len > message_size - *offset) {
+        len = message_size - *offset;
+    }
+
+    // Copy message to user space
+    error_count = copy_to_user(buffer, message + *offset, len);
 
     if (error_count == 0){
-        printk(KERN_INFO "sensor0: Enviados %d bytes ao usuário\n", message_size);
-        return (message_size); // Retorna número de bytes lidos
+        *offset += len;  // Move the offset forward
+        printk(KERN_INFO "sensor0: Enviados %zu bytes ao usuário\n", len);
+        return len;  // Return number of bytes read
     } else {
-        printk(KERN_WARNING "sensor0: Falha ao enviar %d bytes ao usuário\n", error_count);
-        return -EFAULT; // Falha ao copiar para espaço do usuário
+        printk(KERN_WARNING "sensor0: Falha ao enviar dados ao usuário\n");
+        return -EFAULT;
     }
 }
 
@@ -72,7 +80,7 @@ static ssize_t dev_write(struct file *filep, const char *buffer, size_t len, lof
         printk(KERN_WARNING "sensor0: Falha ao receber dados do usuário.\n");
         return -EFAULT;
     }
-    message[to_copy] = '\0';
+    message[to_copy] = '\0';  // Null terminate the string
     printk(KERN_INFO "sensor0: Mensagem recebida do usuário: %s\n", message);
     return to_copy;
 }
@@ -89,14 +97,18 @@ static int __init sensor_init(void){
 
     // Registra um número de dispositivo maior dinamicamente
     majorNumber = register_chrdev(0, DEVICE_NAME, &fops);
-    if (majorNumber<0){
+    if (majorNumber < 0){
         printk(KERN_ALERT "sensor0: Falha ao registrar um major number\n");
         return majorNumber;
     }
     printk(KERN_INFO "sensor0: Registrado corretamente com major number %d\n", majorNumber);
 
-    // Registrar a classe do dispositivo
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 4, 0)
+    sensorClass = class_create(CLASS_NAME);
+#else
     sensorClass = class_create(THIS_MODULE, CLASS_NAME);
+#endif
+
     if (IS_ERR(sensorClass)){
         unregister_chrdev(majorNumber, DEVICE_NAME);
         printk(KERN_ALERT "sensor0: Falha ao registrar a classe do dispositivo\n");
