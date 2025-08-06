@@ -10,20 +10,15 @@ Este repositório contém a implementação de um driver de caractere (LKM) para
 ✅ Módulo de driver de caractere (LKM) simulando sensor virtual  
 ✅ Leitura e escrita no dispositivo `/dev/sensor0`  
 ✅ Testes com logs (`dmesg`, `lsmod`, `cat /dev/sensor0`)  
-✅ Scripts para automação de carregamento e testes  
-✅ Tutorial completo de escalonamento no Linux  
-✅ Exemplos de código para manipulação de políticas (FIFO, RR, CFS, DEADLINE)  
-✅ Avaliação de desempenho dos escalonadores (wallclock, user, system time)  
-✅ Suporte a execução em pendrive bootável ou ambiente emulado (QEMU)
+✅ Scripts para automação de carregamento e testes   
+✅ Suporte a execução em pendrive bootável
 
 🔧 **Requisitos**
 
 Para compilar, simular e testar o projeto, é necessário ter:
 
 - Distribuição Linux leve (Debian Live, Ubuntu Server, Alpine, etc)
-- Ferramentas: gcc, make, kernel headers, kmod (modprobe, insmod, rmmod, lsmod)
-- Permissões de superusuário (sudo)
-- (Opcional) QEMU para emulação
+- Ferramentas:gcc, make, modprobe,insmod, dmesg, lsmod, rmmod, e headers do kernel
 - Ferramentas para criar pendrive bootável (Ventoy, Rufus, etc)
 
 ▶️ **Como Executar**
@@ -44,24 +39,17 @@ Para compilar, simular e testar o projeto, é necessário ter:
       sudo apt-get update
       sudo apt-get install gcc make linux-headers-$(uname -r) kmod
       ```
-
-    - (Opcional) Instale QEMU:
-
-      ```sh
-      sudo apt-get install qemu-system-x86
-      ```
-
 3. **Compile o driver:**
 
     ```sh
-    cd driver/
+    cd Driver_Impl
     make
     ```
 
 4. **Carregue o driver:**
 
     ```sh
-    sudo insmod sensor_driver.ko
+    sudo insmod sensor0.ko
     sudo mknod /dev/sensor0 c <major> 0
     sudo chmod 666 /dev/sensor0
     ```
@@ -71,21 +59,17 @@ Para compilar, simular e testar o projeto, é necessário ter:
 5. **Teste o driver:**
 
     ```sh
-    echo "123" > /dev/sensor0
-    cat /dev/sensor0
-    dmesg | tail
-    lsmod | grep sensor_driver
+    sudo echo "123" > /dev/sensor0
+    sudo cat /dev/sensor0
+    sudo dmesg | tail -n 20
+    sudo lsmod | grep sensor0
     ```
 
 6. **Remova o driver:**
 
     ```sh
-    sudo rmmod sensor_driver
+    sudo rmmod sensor0
     ```
-
-7. **Execute avaliações de escalonamento:**
-
-    - Siga os exemplos e scripts em `/escalonamento/` para compilar e rodar testes de desempenho, alterando políticas via `chrt` ou exemplos em C.
 
 📂 **Estrutura do Repositório**
 
