@@ -3,7 +3,7 @@ Universidade Federal de Roraima – Sistemas Operacionais (DCC403)
 
 📌 **Sobre o Projeto**
 
-Este repositório contém a implementação de um driver de caractere (LKM) para Linux que simula um sensor virtual via `/dev/sensor0`, além de tutoriais e exemplos práticos sobre políticas de escalonamento do kernel Linux. O projeto faz parte de uma atividade acadêmica desenvolvida por [Seu Nome], aplicado à coleta de dados via interface serial e análise de desempenho de diferentes políticas de escalonamento.
+Este repositório contém a implementação de um driver de caractere (LKM) para Linux que simula um sensor virtual via `/dev/sensor0`, além de tutoriais e exemplos práticos sobre políticas de escalonamento do kernel Linux. O projeto faz parte de uma atividade acadêmica desenvolvida por Luccas Henrique e Matheus Garcia, aplicado à coleta de dados via interface serial e análise de desempenho de diferentes políticas de escalonamento.
 
 ⚙️ **Funcionalidades**
 
