@@ -18,17 +18,17 @@ MODULE_VERSION("1.0.0");
 static int    majorNumber;
 static struct class*  sensorClass  = NULL;
 static struct device* sensorDevice = NULL;
-static char   message[128] = {0};  // Message buffer
+static char   message[128] = {0};  
 static short  message_size;
 static int    numberOpens = 0;
 
-// Prototypes for file operations
+
 static int     dev_open(struct inode *, struct file *);
 static int     dev_release(struct inode *, struct file *);
 static ssize_t dev_read(struct file *, char *, size_t, loff_t *);
 static ssize_t dev_write(struct file *, const char *, size_t, loff_t *);
 
-// File operations struct
+
 static struct file_operations fops =
 {
     .open = dev_open,
@@ -48,25 +48,25 @@ static int dev_open(struct inode *inodep, struct file *filep){
 static ssize_t dev_read(struct file *filep, char *buffer, size_t len, loff_t *offset){
     int error_count = 0;
 
-    // Return the last message written by the user
-    message_size = strlen(message);  // Use the size of the 'message' array
+  
+    message_size = strlen(message);  
 
     if (*offset >= message_size) {
-        return 0;  // EOF (end of file)
+        return 0;  
     }
 
-    // Only copy part of the message if requested length exceeds the remaining data
+    
     if (len > message_size - *offset) {
         len = message_size - *offset;
     }
 
-    // Copy message to user space
+ 
     error_count = copy_to_user(buffer, message + *offset, len);
 
     if (error_count == 0){
-        *offset += len;  // Move the offset forward
+        *offset += len;  
         printk(KERN_INFO "sensor0: Enviados %zu bytes ao usuário\n", len);
-        return len;  // Return number of bytes read
+        return len;  
     } else {
         printk(KERN_WARNING "sensor0: Falha ao enviar dados ao usuário\n");
         return -EFAULT;
@@ -80,7 +80,7 @@ static ssize_t dev_write(struct file *filep, const char *buffer, size_t len, lof
         printk(KERN_WARNING "sensor0: Falha ao receber dados do usuário.\n");
         return -EFAULT;
     }
-    message[to_copy] = '\0';  // Null terminate the string
+    message[to_copy] = '\0';  
     printk(KERN_INFO "sensor0: Mensagem recebida do usuário: %s\n", message);
     return to_copy;
 }
@@ -139,3 +139,4 @@ static void __exit sensor_exit(void){
 
 module_init(sensor_init);
 module_exit(sensor_exit);
+
