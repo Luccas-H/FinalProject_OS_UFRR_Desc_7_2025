@@ -3,7 +3,7 @@ Universidade Federal de Roraima – Sistemas Operacionais (DCC403)
 
 📌 **Sobre o Projeto**
 
-Este repositório contém a implementação de um driver de caractere (LKM) para Linux que simula um sensor virtual via `/dev/sensor0`, além de tutoriais e exemplos práticos sobre políticas de escalonamento do kernel Linux. O projeto faz parte de uma atividade acadêmica desenvolvida por Luccas Henrique e Matheus Garcia, aplicado à coleta de dados via interface serial e análise de desempenho de diferentes políticas de escalonamento.
+Este repositório contém a implementação de um driver de caractere (LKM) para Linux que simula um sensor virtual via `/dev/sensor0`. O projeto faz parte de uma atividade acadêmica desenvolvida por Luccas Henrique e Matheus Garcia.
 
 ⚙️ **Funcionalidades**
 
@@ -17,7 +17,7 @@ Este repositório contém a implementação de um driver de caractere (LKM) para
 
 Para compilar, simular e testar o projeto, é necessário ter:
 
-- Distribuição Linux leve (Debian Live, Ubuntu Server, Alpine, etc)
+- Distribuição Linux (Debian Live, Ubuntu Server, Alpine, etc)
 - Ferramentas:gcc, make, modprobe,insmod, dmesg, lsmod, rmmod, e headers do kernel
 - Ferramentas para criar pendrive bootável (Ventoy, Rufus, etc)
 
@@ -28,6 +28,7 @@ Para compilar, simular e testar o projeto, é necessário ter:
     ```sh
     git clone https://github.com/Luccas-H/FinalProject_OS_UFRR_Desc_7_2025.git
     cd FinalProject_OS_UFRR_Desc_7_2025
+    cd Driver_Impl
     ```
 
 2. **Monte o ambiente em um pendrive bootável** (ou use máquina virtual):
@@ -36,13 +37,13 @@ Para compilar, simular e testar o projeto, é necessário ter:
     - Instale as ferramentas necessárias:
 
       ```sh
-      sudo apt-get update
-      sudo apt-get install gcc make linux-headers-$(uname -r) kmod
+      sudo apt update
+      sudo apt install build-essential linux-headers-$(uname -r)
+      sudo apt install gcc-12
       ```
 3. **Compile o driver:**
 
     ```sh
-    cd Driver_Impl
     make
     ```
 
@@ -70,9 +71,6 @@ Para compilar, simular e testar o projeto, é necessário ter:
     ```sh
     sudo rmmod sensor0
     ```
-
-📂 **Estrutura do Repositório**
-
 
 👨‍💻 **Autores**
 
